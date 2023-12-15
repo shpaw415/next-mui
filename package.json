@@ -1,0 +1,39 @@
+{
+  "name": "@shpaw415/mui-next",
+  "version": "0.2.0",
+  "description": "mui library (less flexible but more dev speed)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@types/react": "18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@mui/material": "5.14.20",
+    "@mui/icons-material": "5.14.19",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "next": "14.0.4"
+  },
+  "files": [
+    "/dist",
+    "package.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shpaw415/next-mui.git"
+  },
+  "keywords": [
+    "mui"
+  ],
+  "author": "justin halle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shpaw415/next-mui/issues"
+  },
+  "homepage": "https://github.com/shpaw415/next-mui#readme"
+}
