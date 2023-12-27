@@ -1,4 +1,5 @@
 import { AlertColor } from "@mui/material";
+import { registerKey } from "../register";
 export declare class snackOpt {
     setOpen: Function;
     setData: Function;
@@ -13,17 +14,12 @@ export declare class snackOpt {
         type: AlertColor;
     }): this;
 }
-export interface SnackBarRegister {
-    [key: string]: snackOpt;
-}
+export type SnackBarRegister = snackOpt;
 /**
  *
  * @see
  * @returns
  */
-export declare function SnackBar({ registerkeys, }: {
-    registerkeys?: {
-        primary: string;
-        secondary: string;
-    };
+export declare function SnackBar({ registerkeys }: {
+    registerkeys?: registerKey;
 }): import("react/jsx-runtime").JSX.Element;

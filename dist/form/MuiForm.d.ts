@@ -26,6 +26,7 @@ export interface muiformhook {
         };
         setError: (names: Array<string>) => void;
     }) => Promise<void>;
+    submit: () => void;
 }
 export interface ruleStructure {
     [key: string]: ruleCallback["callback"];

@@ -18,7 +18,7 @@ class Register {
     return this;
   }
   get<T>(key: string) {
-    return this.registers[key] as T;
+    return this.registers[key] as { [key: string]: T };
   }
   showRegisters() {
     console.log(this.registers);

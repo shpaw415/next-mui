@@ -16,9 +16,7 @@ export declare class ModaleControls {
     close(): void;
     create(props: dialogContent): this;
 }
-export interface ModaleRegister {
-    [key: string]: ModaleControls;
-}
+export type ModaleRegister = ModaleControls;
 /**
  *
  * @see ModaleRegister

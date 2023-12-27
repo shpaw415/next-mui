@@ -1,5 +1,5 @@
 import { Backdrop, Box, CircularProgress, SxProps, Theme } from "@mui/material";
-import { useState, JSX, useTransition } from "react";
+import { useState, JSX, useTransition, useRef } from "react";
 
 export function MuiForm({
   children,
@@ -13,6 +13,14 @@ export function MuiForm({
   const [loading, setLoading] = useState<boolean>(false);
   const [, startTransition] = useTransition();
   const ruleset = muiformHook?.ruleset || {};
+  const submitRef = useRef<HTMLInputElement>();
+
+  if (muiformHook)
+    muiformHook.submit = muiformHook
+      ? () => {
+          submitRef.current?.click();
+        }
+      : () => {};
 
   return (
     <Box
@@ -26,6 +34,11 @@ export function MuiForm({
       }}
       action={muiformHook && (muiformHook.serverAction as any)}
       onSubmit={async (event) => {
+        if (loading) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
         setLoading(true);
         event.preventDefault();
         muiformHook?.reset();
@@ -55,7 +68,7 @@ export function MuiForm({
         }
         if (!hasError) {
           startTransition(() => {
-            muiformHook?.serverAction
+            const res = muiformHook?.serverAction
               ? muiformHook.serverAction({
                   data: data,
                   setError: (names: Array<string>) => {
@@ -63,9 +76,10 @@ export function MuiForm({
                   },
                 })
               : undefined;
+
+            res?.then(() => setLoading(false));
           });
-        }
-        setLoading(false);
+        } else setLoading(false);
       }}
     >
       {children}
@@ -75,6 +89,7 @@ export function MuiForm({
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+      <input type="submit" hidden ref={submitRef as any} />
     </Box>
   );
 }
@@ -137,6 +152,7 @@ export interface muiformhook {
     data: { [key: string]: string };
     setError: (names: Array<string>) => void;
   }) => Promise<void>;
+  submit: () => void;
 }
 
 export interface ruleStructure {

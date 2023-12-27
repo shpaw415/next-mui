@@ -1,12 +1,15 @@
 import {
+  Box,
   FormControl,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
+  ThemeProvider,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useRegister } from "../register/register";
+import { ThemeContext, createregisterKeys } from "..";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -29,10 +32,8 @@ interface SelectorProps {
 }
 
 export interface SelectorRegister {
-  [key: string]: {
-    setValue: (value: string) => void;
-    setError: (value: boolean) => void;
-  };
+  setValue: (value: string) => void;
+  setError: (value: boolean) => void;
 }
 
 export function Selector({
@@ -49,18 +50,18 @@ export function Selector({
 }: SelectorProps) {
   const [currentVal, setCurrentVal] = useState<string>(value || "");
   const [error, setError] = useState(false);
-
-  const register = useRegister(
-    registerkeys
-      ? {
-          [registerkeys.primary]: {
-            [registerkeys.secondary]: {
-              setValue: setCurrentVal,
-              setError: setError,
-            },
-          },
-        }
-      : undefined
+  const theme = useContext(ThemeContext);
+  useRegister(
+    createregisterKeys<SelectorRegister>({
+      keys: {
+        primary: registerkeys?.primary,
+        secondary: registerkeys?.secondary,
+      },
+      registerOptions: {
+        setValue: setCurrentVal,
+        setError: setError,
+      },
+    })
   );
 
   const MenuProps = useMemo(() => {
@@ -74,8 +75,8 @@ export function Selector({
     };
   }, [width]);
 
-  return (
-    <div>
+  const component = (
+    <Box>
       <FormControl sx={{ m: 1, width: width || 300 }}>
         <InputLabel id={id} sx={{ color: labelColor || "white" }} color={color}>
           {label}
@@ -100,7 +101,12 @@ export function Selector({
           ))}
         </Select>
       </FormControl>
-    </div>
+    </Box>
+  );
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>{component}</ThemeProvider>
+  ) : (
+    component
   );
 }
 

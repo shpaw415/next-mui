@@ -1,31 +1,26 @@
-import { TextFieldProps, TextFieldVariants } from "@mui/material";
-import { RefObject } from "react";
+import { InputLabelProps, OutlinedInputProps, TextFieldProps, TextFieldVariants, Theme } from "@mui/material";
+import { registerKey } from "..";
 interface SearchFieldsProps {
     placeholder: string;
     onchange: (value: string) => void;
 }
 export declare function SearchField({ placeholder, onchange }: SearchFieldsProps): import("react/jsx-runtime").JSX.Element;
 export interface InputFieldRegister {
-    [key: string]: {
-        set: ({ error, value }: {
-            error: boolean;
-            value: string;
-        }) => void;
-    };
+    set: ({ error, value }: {
+        error: boolean;
+        value: string;
+    }) => void;
+    reset: () => void;
 }
 export declare function InputField<Variant extends TextFieldVariants>(props: {
     variant?: Variant;
-    registerkeys?: {
-        primary: string;
-        secondary: string;
-    };
+    registerkeys?: registerKey;
+    theme?: Theme;
 } & Omit<TextFieldProps, "variant">): import("react/jsx-runtime").JSX.Element;
-type childProps = {
-    name: string;
-    required?: boolean;
+export declare function PasswordField({ label, labelProps, inputProps, registerkeys, }: {
     label?: string;
-    error?: boolean;
-    ref: RefObject<null>;
-};
-export declare const PasswordField: import("react").ForwardRefExoticComponent<Omit<childProps, "ref"> & import("react").RefAttributes<HTMLDivElement>>;
+    labelProps?: InputLabelProps;
+    inputProps?: OutlinedInputProps;
+    registerkeys?: registerKey;
+}): import("react/jsx-runtime").JSX.Element;
 export {};

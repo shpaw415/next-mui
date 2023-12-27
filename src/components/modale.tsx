@@ -5,10 +5,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  ThemeProvider,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { MuiForm, muiformhook } from "../form/MuiForm";
 import { useRegister } from "../register/register";
+import { ThemeContext, createregisterKeys } from "..";
 
 interface dialogContent {
   title: string;
@@ -38,9 +40,7 @@ export class ModaleControls {
   }
 }
 
-export interface ModaleRegister {
-  [key: string]: ModaleControls;
-}
+export type ModaleRegister = ModaleControls;
 
 /**
  *
@@ -52,19 +52,20 @@ export function Modale({
   registerkeys?: { primary: string; secondary: string };
 }) {
   const [open, setOpen] = useState(false);
+  const theme = useContext(ThemeContext);
   const [content, setContent] = useState<dialogContent>({
     title: "",
     text: "",
   });
   const dialogObj = useMemo(() => new ModaleControls(setOpen, setContent), []);
   useRegister(
-    registerkeys
-      ? {
-          [registerkeys.primary]: {
-            [registerkeys.secondary]: dialogObj,
-          },
-        }
-      : undefined
+    createregisterKeys<ModaleRegister>({
+      keys: {
+        primary: registerkeys?.primary,
+        secondary: registerkeys?.secondary,
+      },
+      registerOptions: dialogObj,
+    })
   );
 
   if (!content.buttons) {
@@ -72,19 +73,20 @@ export function Modale({
       <Button
         key={"accept"}
         type="submit"
+        variant="contained"
         onSubmit={() => {
           content.onsubmit ? content.onsubmit() : null;
         }}
       >
         Accept
       </Button>,
-      <Button key={"cancel"} onClick={() => setOpen(false)}>
+      <Button key={"cancel"} onClick={() => setOpen(false)} variant="contained">
         Cancel
       </Button>,
     ];
   }
 
-  return (
+  const componant = (
     <Dialog open={open}>
       <DialogTitle>{content.title}</DialogTitle>
       <MuiForm muiformHook={content.formHook}>
@@ -97,5 +99,11 @@ export function Modale({
         {content.buttons && <DialogActions>{content.buttons}</DialogActions>}
       </MuiForm>
     </Dialog>
+  );
+
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>{componant}</ThemeProvider>
+  ) : (
+    componant
   );
 }

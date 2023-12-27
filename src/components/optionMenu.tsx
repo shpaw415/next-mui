@@ -6,18 +6,21 @@ import {
   MenuItem,
   SxProps,
   Theme,
+  ThemeProvider,
   Typography,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ThemeContext } from "..";
 
 interface OptionMenuPros {
   items: Array<OptionMenuItem>;
   id: string;
-  anchorEl: Element;
+  anchorEl: Element | null;
   width?: string | number;
   open: boolean;
   handleClose: (value: unknown) => void;
+  sx?: SxProps<Theme>;
 }
 interface OptionMenuItem {
   icon: any;
@@ -33,8 +36,10 @@ export function OptionMenu({
   open,
   handleClose,
   width,
+  sx,
 }: OptionMenuPros) {
-  return (
+  const theme = useContext(ThemeContext);
+  const component = (
     <Menu
       id={id}
       anchorEl={anchorEl}
@@ -52,30 +57,33 @@ export function OptionMenu({
         vertical: "top",
         horizontal: "left",
       }}
+      sx={sx}
     >
       {items.map((item) => (
         <MenuItem
-          sx={{ width: width }}
+          sx={{ width: width, bgcolor: "inherit" }}
           onClick={() => {
             item.callback();
             handleClose(null);
           }}
           key={item.text}
         >
-          <ListItemIcon>{item.icon}</ListItemIcon>
+          {item.icon && <ListItemIcon>{item.icon}</ListItemIcon>}
           <ListItemText>{item.text}</ListItemText>
           {item.racourcis && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ overflowX: "auto", ml: 2 }}
-            >
+            <Typography variant="body2" sx={{ overflowX: "auto", ml: 2 }}>
               ⌘{item.racourcis}
             </Typography>
           )}
         </MenuItem>
       ))}
     </Menu>
+  );
+
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>{component}</ThemeProvider>
+  ) : (
+    component
   );
 }
 
@@ -95,16 +103,16 @@ export function OptionMenuBtn({
   btnText,
 }: OptionMenuBtnStruct) {
   const [anchorEl, setanchorEl] = useState<null | Element>(null);
-
+  const theme = useContext(ThemeContext);
   const handleClose = () => setanchorEl(null);
   const open = Boolean(anchorEl);
 
-  return (
+  const component = (
     <>
       <Button
         endIcon={<KeyboardArrowDownIcon />}
         variant="contained"
-        sx={{ height: "70%", bgcolor: "primary.light", ...sxButton }}
+        sx={{ height: "70%", ...sxButton }}
         aria-controls={open ? id : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
@@ -121,5 +129,10 @@ export function OptionMenuBtn({
         handleClose={handleClose}
       />
     </>
+  );
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>{component}</ThemeProvider>
+  ) : (
+    component
   );
 }

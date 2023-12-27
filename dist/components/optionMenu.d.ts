@@ -2,10 +2,11 @@ import { SxProps, Theme } from "@mui/material";
 interface OptionMenuPros {
     items: Array<OptionMenuItem>;
     id: string;
-    anchorEl: Element;
+    anchorEl: Element | null;
     width?: string | number;
     open: boolean;
     handleClose: (value: unknown) => void;
+    sx?: SxProps<Theme>;
 }
 interface OptionMenuItem {
     icon: any;
@@ -13,7 +14,7 @@ interface OptionMenuItem {
     racourcis?: string;
     callback: Function;
 }
-export declare function OptionMenu({ items, id, anchorEl, open, handleClose, width, }: OptionMenuPros): import("react/jsx-runtime").JSX.Element;
+export declare function OptionMenu({ items, id, anchorEl, open, handleClose, width, sx, }: OptionMenuPros): import("react/jsx-runtime").JSX.Element;
 interface OptionMenuBtnStruct {
     sxButton?: SxProps<Theme>;
     items: Array<OptionMenuItem>;

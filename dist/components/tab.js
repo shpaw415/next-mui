@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Tab, Tabs, ThemeProvider, Typography, } from "@mui/material";
 import { useState } from "react";
 import { useRegister } from "../register/register";
 import * as React from "react";
@@ -11,6 +11,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { ThemeContext, createregisterKeys } from "..";
 function CustomTabPanel(props) {
     const { children, value, index, id, containerSx } = props;
     return (_jsx("div", { role: "tabpanel", hidden: value !== index, id: `${id}-tabpanel-${index}`, "aria-labelledby": `${id}-tab-${index}`, children: value === index && (_jsx(Box, { sx: { p: 3, ...containerSx }, children: _jsx(Typography, { children: children }) })) }));
@@ -23,16 +24,19 @@ function a11yProps(index, id) {
 }
 export function ScrollableTabs({ items, id, color, containersx, tabHeadersx, registerkeys, }) {
     const [value, setValue] = useState(0);
-    useRegister(registerkeys
-        ? {
-            [registerkeys.primary]: {
-                [registerkeys.secondary]: { setTab: setValue },
-            },
-        }
-        : undefined);
+    const theme = React.useContext(ThemeContext);
+    useRegister(createregisterKeys({
+        keys: {
+            primary: registerkeys?.primary,
+            secondary: registerkeys?.secondary,
+        },
+        registerOptions: {
+            setTab: setValue,
+        },
+    }));
     let index = 0;
     let index2 = 0;
-    return (_jsxs(Box, { sx: { width: "100%" }, children: [_jsx(Box, { sx: {
+    const component = (_jsxs(Box, { sx: { width: "100%" }, children: [_jsx(Box, { sx: {
                     maxWidth: { xs: 320, sm: 480 },
                     bgcolor: "primary.light",
                     ...tabHeadersx,
@@ -46,6 +50,7 @@ export function ScrollableTabs({ items, id, color, containersx, tabHeadersx, reg
                 index2++;
                 return (_jsx(CustomTabPanel, { value: value, index: index2 - 1, id: id, containerSx: containersx, children: item.children }, `panel-${id}-${index2}`));
             })] }));
+    return theme.theme ? (_jsx(ThemeProvider, { theme: theme, children: component })) : (component);
 }
 export function GroupingTable(data) {
     const [page, setPage] = React.useState(0);

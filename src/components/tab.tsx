@@ -1,4 +1,12 @@
-import { Box, SxProps, Tab, Tabs, Theme, Typography } from "@mui/material";
+import {
+  Box,
+  SxProps,
+  Tab,
+  Tabs,
+  Theme,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { useRegister } from "../register/register";
 
@@ -11,6 +19,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { ThemeContext, createregisterKeys, registerKey } from "..";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,7 +61,7 @@ interface scrollTabsProps {
   color?: "primary" | "secondary";
   containersx?: SxProps<Theme>;
   tabHeadersx?: SxProps<Theme>;
-  registerkeys?: { primary: string; secondary: string };
+  registerkeys?: registerKey;
 }
 interface tabStruct {
   label: string;
@@ -60,9 +69,7 @@ interface tabStruct {
 }
 
 export interface ScrollableTabsRegister {
-  [key: string]: {
-    setTab: (value: number) => void;
-  };
+  setTab: (value: number) => void;
 }
 
 export function ScrollableTabs({
@@ -74,20 +81,23 @@ export function ScrollableTabs({
   registerkeys,
 }: scrollTabsProps) {
   const [value, setValue] = useState(0);
+  const theme = React.useContext(ThemeContext);
   useRegister(
-    registerkeys
-      ? {
-          [registerkeys.primary]: {
-            [registerkeys.secondary]: { setTab: setValue },
-          },
-        }
-      : undefined
+    createregisterKeys<ScrollableTabsRegister>({
+      keys: {
+        primary: registerkeys?.primary,
+        secondary: registerkeys?.secondary,
+      },
+      registerOptions: {
+        setTab: setValue,
+      },
+    })
   );
 
   let index = 0;
   let index2 = 0;
 
-  return (
+  const component = (
     <Box sx={{ width: "100%" }}>
       <Box
         sx={{
@@ -135,6 +145,11 @@ export function ScrollableTabs({
         );
       })}
     </Box>
+  );
+  return theme.theme ? (
+    <ThemeProvider theme={theme}>{component}</ThemeProvider>
+  ) : (
+    component
   );
 }
 

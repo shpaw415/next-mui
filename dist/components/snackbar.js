@@ -1,7 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { Alert, Snackbar } from "@mui/material";
 import { useState } from "react";
-import { useRegister } from "../register";
+import { createregisterKeys, useRegister } from "../register";
 export class snackOpt {
     setOpen;
     setData;
@@ -27,18 +27,20 @@ export class snackOpt {
  * @see
  * @returns
  */
-export function SnackBar({ registerkeys, }) {
+export function SnackBar({ registerkeys }) {
     const [open, setOpen] = useState(false);
     const [data, setdata] = useState({ message: "", type: "info" });
     useRegister(registerkeys
-        ? {
-            [registerkeys.primary]: {
-                [registerkeys.secondary]: new snackOpt({
-                    setOpen: setOpen,
-                    setData: setdata,
-                }),
+        ? createregisterKeys({
+            keys: {
+                primary: registerkeys.primary,
+                secondary: registerkeys.secondary,
             },
-        }
+            registerOptions: new snackOpt({
+                setOpen: setOpen,
+                setData: setdata,
+            }),
+        })
         : undefined);
     const handleClose = (event, reason) => {
         event;

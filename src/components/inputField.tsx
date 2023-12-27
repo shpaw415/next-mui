@@ -4,20 +4,26 @@ import {
   InputAdornment,
   InputBase,
   InputLabel,
+  InputLabelProps,
   OutlinedInput,
+  OutlinedInputProps,
   TextField,
   TextFieldProps,
   TextFieldVariants,
+  Theme,
+  ThemeProvider,
   alpha,
   styled,
 } from "@mui/material";
 import { useRegister } from "../register/register";
-import { RefObject, forwardRef, useState } from "react";
+import { RefObject, useContext, useState } from "react";
 import {
   Visibility,
   VisibilityOff,
   Search as SearchIcon,
 } from "@mui/icons-material";
+import { createregisterKeys, registerKey } from "..";
+import { ThemeContext } from "../theme";
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -83,80 +89,116 @@ export function SearchField({ placeholder, onchange }: SearchFieldsProps) {
 }
 
 export interface InputFieldRegister {
-  [key: string]: {
-    set: ({ error, value }: { error: boolean; value: string }) => void;
-  };
+  set: ({ error, value }: { error: boolean; value: string }) => void;
+  reset: () => void;
 }
 
 export function InputField<Variant extends TextFieldVariants>(
   props: {
     variant?: Variant;
-    registerkeys?: {
-      primary: string;
-      secondary: string;
-    };
+    registerkeys?: registerKey;
+    theme?: Theme;
   } & Omit<TextFieldProps, "variant">
 ) {
+  const theme = useContext(ThemeContext);
   const [state, setState] = useState({
     error: false,
-    value: "",
+    value: undefined as undefined | string,
   });
   useRegister(
-    props.registerkeys
-      ? {
-          [props.registerkeys.primary]: {
-            [props.registerkeys.secondary]: {
-              set: setState,
-            },
-          } as InputFieldRegister,
-        }
-      : undefined
+    createregisterKeys<InputFieldRegister>({
+      keys: {
+        primary: props.registerkeys?.primary,
+        secondary: props.registerkeys?.secondary,
+      },
+      registerOptions: {
+        set: setState,
+        reset: () => {
+          setState((current) => {
+            return { ...current, value: "" };
+          });
+          setTimeout(() => {
+            setState((current) => {
+              return {
+                ...current,
+                value: undefined,
+              };
+            });
+          }, 100);
+        },
+      },
+    })
   );
-  return <TextField {...props} error={state.error}></TextField>;
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>
+      <TextField {...state} {...props}></TextField>
+    </ThemeProvider>
+  ) : (
+    <TextField {...state} {...props}></TextField>
+  );
 }
 
-type childProps = {
-  name: string;
-  required?: boolean;
+interface PasswordFieldRegister {
+  clearValue: () => void;
+}
+
+export function PasswordField({
+  label,
+  labelProps,
+  inputProps,
+  registerkeys,
+}: {
   label?: string;
-  error?: boolean;
-  ref: RefObject<null>;
-};
-
-export const PasswordField = forwardRef<HTMLDivElement, childProps>(
-  (props, ref) => {
-    const [password, setPassword] = useState<"password" | "text">("password");
-    const labelColor = props.error ? "#f44336" : "inherit";
-    return (
-      <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
-        <InputLabel
-          htmlFor="outlined-adornment-password"
-          sx={{ color: labelColor }}
-        >
-          {props.label || ""}
-        </InputLabel>
-        <OutlinedInput
-          sx={{ borderColor: "blue", color: "inherit" }}
-          {...props}
-          type={password == "text" ? "text" : "password"}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={() =>
-                  setPassword(password == "text" ? "password" : "text")
-                }
-                onMouseDown={(e) => e.preventDefault()}
-                edge="end"
-              >
-                {password == "password" ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </FormControl>
-    );
-  }
-);
-
-PasswordField.displayName = "PasswordField";
+  labelProps?: InputLabelProps;
+  inputProps?: OutlinedInputProps;
+  registerkeys?: registerKey;
+}) {
+  const [value, setValue] = useState<"" | undefined>(undefined);
+  useRegister(
+    createregisterKeys<PasswordFieldRegister>({
+      keys: {
+        primary: registerkeys?.primary,
+        secondary: registerkeys?.secondary,
+      },
+      registerOptions: {
+        clearValue: () => {
+          setValue("");
+          setTimeout(() => setValue(undefined), 100);
+        },
+      },
+    })
+  );
+  const [password, setPassword] = useState<"password" | "text">("password");
+  const theme = useContext(ThemeContext);
+  const component = (
+    <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+      <InputLabel htmlFor="outlined-adornment-password" {...labelProps}>
+        {label || ""}
+      </InputLabel>
+      <OutlinedInput
+        value={value}
+        {...inputProps}
+        type={password == "text" ? "text" : "password"}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={() =>
+                setPassword(password == "text" ? "password" : "text")
+              }
+              onMouseDown={(e) => e.preventDefault()}
+              edge="end"
+            >
+              {password == "password" ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        }
+      />
+    </FormControl>
+  );
+  return theme.theme ? (
+    <ThemeProvider theme={theme.theme}>{component}</ThemeProvider>
+  ) : (
+    component
+  );
+}

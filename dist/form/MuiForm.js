@@ -1,10 +1,17 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Backdrop, Box, CircularProgress } from "@mui/material";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 export function MuiForm({ children, muiformHook, sx, }) {
     const [loading, setLoading] = useState(false);
     const [, startTransition] = useTransition();
     const ruleset = muiformHook?.ruleset || {};
+    const submitRef = useRef();
+    if (muiformHook)
+        muiformHook.submit = muiformHook
+            ? () => {
+                submitRef.current?.click();
+            }
+            : () => { };
     return (_jsxs(Box, { component: "form", sx: {
             ...sx,
             "& .MuiTextField-root": {
@@ -12,6 +19,11 @@ export function MuiForm({ children, muiformHook, sx, }) {
                 width: "25ch",
             },
         }, action: muiformHook && muiformHook.serverAction, onSubmit: async (event) => {
+            if (loading) {
+                event.preventDefault();
+                event.stopPropagation();
+                return;
+            }
             setLoading(true);
             event.preventDefault();
             muiformHook?.reset();
@@ -39,7 +51,7 @@ export function MuiForm({ children, muiformHook, sx, }) {
             }
             if (!hasError) {
                 startTransition(() => {
-                    muiformHook?.serverAction
+                    const res = muiformHook?.serverAction
                         ? muiformHook.serverAction({
                             data: data,
                             setError: (names) => {
@@ -47,10 +59,12 @@ export function MuiForm({ children, muiformHook, sx, }) {
                             },
                         })
                         : undefined;
+                    res?.then(() => setLoading(false));
                 });
             }
-            setLoading(false);
-        }, children: [children, _jsx(Backdrop, { sx: { color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }, open: loading, children: _jsx(CircularProgress, { color: "inherit" }) })] }));
+            else
+                setLoading(false);
+        }, children: [children, _jsx(Backdrop, { sx: { color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }, open: loading, children: _jsx(CircularProgress, { color: "inherit" }) }), _jsx("input", { type: "submit", hidden: true, ref: submitRef })] }));
 }
 function formatVals(names) {
     let formated = {};

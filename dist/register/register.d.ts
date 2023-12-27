@@ -7,7 +7,9 @@ declare class Register {
     private registers;
     private States;
     add(register: RegisterStruct): this;
-    get<T>(key: string): T;
+    get<T>(key: string): {
+        [key: string]: T;
+    };
     showRegisters(): void;
     /**
      * for hook use only ***do not use***

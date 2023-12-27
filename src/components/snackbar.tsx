@@ -1,6 +1,6 @@
 import { Alert, AlertColor, Snackbar } from "@mui/material";
 import { useState } from "react";
-import { useRegister } from "../register";
+import { createregisterKeys, registerKey, useRegister } from "../register";
 
 export class snackOpt {
   setOpen: Function;
@@ -22,31 +22,27 @@ export class snackOpt {
     return this;
   }
 }
-export interface SnackBarRegister {
-  [key: string]: snackOpt;
-}
+export type SnackBarRegister = snackOpt;
 /**
  *
  * @see
  * @returns
  */
-export function SnackBar({
-  registerkeys,
-}: {
-  registerkeys?: { primary: string; secondary: string };
-}) {
+export function SnackBar({ registerkeys }: { registerkeys?: registerKey }) {
   const [open, setOpen] = useState(false);
   const [data, setdata] = useState({ message: "", type: "info" as AlertColor });
   useRegister(
     registerkeys
-      ? {
-          [registerkeys.primary]: {
-            [registerkeys.secondary]: new snackOpt({
-              setOpen: setOpen,
-              setData: setdata,
-            }),
+      ? createregisterKeys<SnackBarRegister>({
+          keys: {
+            primary: registerkeys.primary,
+            secondary: registerkeys.secondary,
           },
-        }
+          registerOptions: new snackOpt({
+            setOpen: setOpen,
+            setData: setdata,
+          }),
+        })
       : undefined
   );
 

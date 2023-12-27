@@ -15,10 +15,8 @@ interface SelectorProps {
     };
 }
 export interface SelectorRegister {
-    [key: string]: {
-        setValue: (value: string) => void;
-        setError: (value: boolean) => void;
-    };
+    setValue: (value: string) => void;
+    setError: (value: boolean) => void;
 }
 export declare function Selector({ width, items, labelColor, label, id, onchange, color, name, value, registerkeys, }: SelectorProps): import("react/jsx-runtime").JSX.Element;
 export declare function RandomString(length: number): string;
