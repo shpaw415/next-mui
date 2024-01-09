@@ -1,6 +1,6 @@
 {
   "name": "@shpaw415/mui-next",
-  "version": "0.2.0",
+  "version": "1.0.2",
   "description": "mui library (less flexible but more dev speed)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

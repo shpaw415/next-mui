@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Backdrop, Box, CircularProgress } from "@mui/material";
+import { Backdrop, Box, CircularProgress, } from "@mui/material";
 import { useState, useTransition, useRef } from "react";
-export function MuiForm({ children, muiformHook, sx, }) {
+export function MuiForm({ children, muiformHook, sx, formProps, }) {
     const [loading, setLoading] = useState(false);
     const [, startTransition] = useTransition();
     const ruleset = muiformHook?.ruleset || {};
@@ -12,7 +12,7 @@ export function MuiForm({ children, muiformHook, sx, }) {
                 submitRef.current?.click();
             }
             : () => { };
-    return (_jsxs(Box, { component: "form", sx: {
+    return (_jsxs(Box, { ...formProps, component: "form", sx: {
             ...sx,
             "& .MuiTextField-root": {
                 m: 1,

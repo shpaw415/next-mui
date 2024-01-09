@@ -1,9 +1,10 @@
-import { SxProps, Theme } from "@mui/material";
+import { BoxProps, SxProps, Theme } from "@mui/material";
 import { JSX } from "react";
-export declare function MuiForm({ children, muiformHook, sx, }: {
+export declare function MuiForm({ children, muiformHook, sx, formProps, }: {
     children: JSX.Element | Array<JSX.Element | undefined>;
     muiformHook?: muiformhook;
     sx?: SxProps<Theme>;
+    formProps?: Partial<BoxProps<"form">>;
 }): import("react/jsx-runtime").JSX.Element;
 export declare function useMuiForm({ ruleset, onSuccess, serverAction, }: {
     ruleset: ruleStructure;

@@ -1,14 +1,23 @@
-import { Backdrop, Box, CircularProgress, SxProps, Theme } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  BoxProps,
+  CircularProgress,
+  SxProps,
+  Theme,
+} from "@mui/material";
 import { useState, JSX, useTransition, useRef } from "react";
 
 export function MuiForm({
   children,
   muiformHook,
   sx,
+  formProps,
 }: {
   children: JSX.Element | Array<JSX.Element | undefined>;
   muiformHook?: muiformhook;
   sx?: SxProps<Theme>;
+  formProps?: Partial<BoxProps<"form">>;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [, startTransition] = useTransition();
@@ -24,6 +33,7 @@ export function MuiForm({
 
   return (
     <Box
+      {...formProps}
       component="form"
       sx={{
         ...sx,
@@ -32,7 +42,7 @@ export function MuiForm({
           width: "25ch",
         },
       }}
-      action={muiformHook && (muiformHook.serverAction as any)}
+      action={(muiformHook && (muiformHook.serverAction as any)) || undefined}
       onSubmit={async (event) => {
         if (loading) {
           event.preventDefault();
@@ -77,7 +87,7 @@ export function MuiForm({
                 })
               : undefined;
 
-            res?.then(() => setLoading(false));
+            res ? res.then(() => setLoading(false)) : setLoading(false);
           });
         } else setLoading(false);
       }}
